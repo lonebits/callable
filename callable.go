@@ -129,7 +129,7 @@ func (c *Callable) handleCorsPreflight(w http.ResponseWriter, r *http.Request) {
 func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 	token, err := c.validateToken(r)
 	if err != nil {
-		return Error(Unauthenticated, "invalid token (%v)", err)
+		return Error(Unauthenticated, "invalid ID token: %v", err)
 	}
 
 	mt, mp, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
@@ -155,7 +155,7 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 	}{c.request}
 
 	if err = json.NewDecoder(r.Body).Decode(&payload); err != nil {
-		return Error(InvalidArgument, "failed to decode payload (%v)", err)
+		return Error(InvalidArgument, "failed to decode payload: %v", err)
 	}
 
 	logger := c.logger
