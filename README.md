@@ -1,6 +1,6 @@
 # Firebase Callable
 
-[![GoDoc Widget]][GoDoc]
+[![GoPkg Widget]][GoPkg]
 
 A simple implementation of the [Firebase](https://firebase.google.com)
 [https.onCall protocol](https://firebase.google.com/docs/functions/callable-reference)
@@ -54,3 +54,6 @@ func Greeting(w http.ResponseWriter, r *http.Request) {
 The [`WithAuth`](https://pkg.go.dev/github.com/lonebits/callable#WithAuth)
 option can be used to enable ID Token validation. Firebase Auth  user ID
 is then passed inside `callable.Call.UID`.
+
+[GoPkg]: https://pkg.go.dev/github.com/lonebits/callable
+[GoPkg Widget]: https://pkg.go.dev/badge/github.com/lonebits/callable.svg
