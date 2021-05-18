@@ -1,7 +1,7 @@
 # Firebase Callable
 
 [![GoPkg Widget](https://pkg.go.dev/badge/github.com/lonebits/callable.svg)](https://pkg.go.dev/github.com/lonebits/callable)
-[![build](https://github.com/lonebits/callable/workflows/build/badge.svg?branch=master)](https://github.com/lonebits/callable/actions)
+[![build](https://github.com/lonebits/callable/actions/workflows/build.yml/badge.svg)](https://github.com/lonebits/callable/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/lonebits/callable)](https://goreportcard.com/report/github.com/lonebits/callable)
 
 A simple implementation of the [Firebase](https://firebase.google.com)
