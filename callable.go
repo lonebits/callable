@@ -132,7 +132,11 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 		return Error(Unauthenticated, "invalid ID token: %v", err)
 	}
 
-	mt, mp, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	ct := r.Header.Get("Content-Type")
+	if ct == "" {
+		return Error(InvalidArgument, "missing content type")
+	}
+	mt, mp, err := mime.ParseMediaType(ct)
 	if err != nil {
 		return Error(InvalidArgument, "invalid content type")
 	}
@@ -163,11 +167,12 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 		logger = logr.FromContextOrDiscard(r.Context())
 	}
 
-	result, err := c.request.Handle(r.Context(), Call{
-		UID: token.UID,
-		IID: r.Header.Get("Firebase-Instance-ID-Token"),
-	})
+	call := Call{IID: r.Header.Get("Firebase-Instance-ID-Token")}
+	if token != nil {
+		call.UID = token.UID
+	}
 
+	result, err := c.request.Handle(r.Context(), call)
 	if err != nil {
 		logger.Error(err, "callable returned error", err)
 		return err

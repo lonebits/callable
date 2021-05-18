@@ -84,7 +84,7 @@ func (e callError) Error() string {
 }
 
 func (e callError) write(w http.ResponseWriter) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(e.code)
 
 	data := errorResponse{errorData{
