@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"firebase.google.com/go/auth"
 	"fmt"
-	"github.com/go-logr/logr"
 	"mime"
 	"net/http"
 	"strings"
+
+	"firebase.google.com/go/auth"
+	"github.com/go-logr/logr"
 )
 
 // Callable encapsulates a Firebase 'onCall' request with its handler method.
@@ -120,6 +121,9 @@ func (c *Callable) handleCorsPreflight(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Vary", "Origin")
 	w.Header().Add("Vary", "Access-Control-Request-Headers")
 	w.Header().Add("Access-Control-Allow-Methods", "POST")
+	if r.Header.Get("Access-Control-Request-Headers") != "" {
+		w.Header().Add("Access-Control-Allow-Headers", "*")
+	}
 	if origin := r.Header.Get("Origin"); origin != "" {
 		w.Header().Add("Access-Control-Allow-Origin", origin)
 	}
