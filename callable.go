@@ -18,7 +18,7 @@ type Callable struct {
 	request      Request
 	authClient   *auth.Client
 	authRequired bool
-	logger       logr.Logger
+	logger       *logr.Logger
 }
 
 // Request represents the call request data and provides a method to handle it.
@@ -61,7 +61,8 @@ type loggerOption struct {
 }
 
 func (o loggerOption) config(c *Callable) {
-	c.logger = o.logger
+	logger := o.logger
+	c.logger = &logger
 }
 
 // New creates a new Callable for the given Request object. When serving
@@ -166,9 +167,11 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 		return Error(InvalidArgument, "failed to decode payload: %v", err)
 	}
 
-	logger := c.logger
-	if logger == nil {
+	var logger logr.Logger
+	if c.logger == nil {
 		logger = logr.FromContextOrDiscard(r.Context())
+	} else {
+		logger = *c.logger
 	}
 
 	call := Call{IID: r.Header.Get("Firebase-Instance-ID-Token")}
