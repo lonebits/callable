@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/exp/slog"
 	"mime"
 	"net/http"
 	"strings"
 
-	"firebase.google.com/go/auth"
-	"github.com/go-logr/logr"
+	"firebase.google.com/go/v4/auth"
 )
 
 // Callable encapsulates a Firebase 'onCall' request with its handler method.
@@ -18,7 +18,7 @@ type Callable struct {
 	request      Request
 	authClient   *auth.Client
 	authRequired bool
-	logger       *logr.Logger
+	logger       *slog.Logger
 }
 
 // Request represents the call request data and provides a method to handle it.
@@ -57,12 +57,11 @@ func (o authOption) config(c *Callable) {
 }
 
 type loggerOption struct {
-	logger logr.Logger
+	logger *slog.Logger
 }
 
 func (o loggerOption) config(c *Callable) {
-	logger := o.logger
-	c.logger = &logger
+	c.logger = o.logger
 }
 
 // New creates a new Callable for the given Request object. When serving
@@ -91,7 +90,7 @@ func WithAuth(client *auth.Client, required bool) Option {
 }
 
 // WithLogger adds a logger that will be used to log errors.
-func WithLogger(logger logr.Logger) Option {
+func WithLogger(logger *slog.Logger) Option {
 	return loggerOption{logger}
 }
 
@@ -167,11 +166,11 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 		return Error(InvalidArgument, "failed to decode payload: %v", err)
 	}
 
-	var logger logr.Logger
+	var logger *slog.Logger
 	if c.logger == nil {
-		logger = logr.FromContextOrDiscard(r.Context())
+		logger = slog.Default()
 	} else {
-		logger = *c.logger
+		logger = c.logger
 	}
 
 	call := Call{IID: r.Header.Get("Firebase-Instance-ID-Token")}
@@ -181,13 +180,13 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 
 	result, err := c.request.Handle(r.Context(), call)
 	if err != nil {
-		logger.Error(err, "callable returned error", err)
+		logger.Error("callable returned error", "error", err)
 		return err
 	}
 
 	w.Header().Add("Content-Type", "application/json; charset=utf-8")
 	if err := json.NewEncoder(w).Encode(dataResponse{result}); err != nil {
-		logger.Error(err, "failed to write response")
+		logger.Error("failed to write response", "error", err)
 	}
 
 	return nil
