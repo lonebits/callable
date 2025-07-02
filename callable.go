@@ -172,7 +172,7 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	body, _ := io.ReadAll(r.Body)
-	c.logger.Info(fmt.Sprintf("body: %s", string(body)))
+	logger.Info(fmt.Sprintf("body: %s", string(body)))
 	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&payload); err != nil {
 		return Error(InvalidArgument, "failed to decode payload: %v", err)
 	}
