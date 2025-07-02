@@ -1,11 +1,13 @@
 package callable
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"golang.org/x/exp/slog"
+	"io"
 	"mime"
 	"net/http"
 	"strings"
@@ -162,7 +164,9 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 		Data interface{} `json:"data"`
 	}{c.request}
 
-	if err = json.NewDecoder(r.Body).Decode(&payload); err != nil {
+	body, _ := io.ReadAll(r.Body)
+	c.logger.Info("body: %s", string(body))
+	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&payload); err != nil {
 		return Error(InvalidArgument, "failed to decode payload: %v", err)
 	}
 
