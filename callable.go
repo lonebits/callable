@@ -164,17 +164,17 @@ func (c *Callable) handlePost(w http.ResponseWriter, r *http.Request) error {
 		Data interface{} `json:"data"`
 	}{c.request}
 
-	body, _ := io.ReadAll(r.Body)
-	c.logger.Info(fmt.Sprintf("body: %s", string(body)))
-	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&payload); err != nil {
-		return Error(InvalidArgument, "failed to decode payload: %v", err)
-	}
-
 	var logger *slog.Logger
 	if c.logger == nil {
 		logger = slog.Default()
 	} else {
 		logger = c.logger
+	}
+
+	body, _ := io.ReadAll(r.Body)
+	c.logger.Info(fmt.Sprintf("body: %s", string(body)))
+	if err = json.NewDecoder(bytes.NewReader(body)).Decode(&payload); err != nil {
+		return Error(InvalidArgument, "failed to decode payload: %v", err)
 	}
 
 	call := Call{IID: r.Header.Get("Firebase-Instance-ID-Token")}
